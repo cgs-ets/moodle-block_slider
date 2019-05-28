@@ -33,4 +33,12 @@
 
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
+    'block/slider:myaddinstance' => array(
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array(
+                'user' => CAP_ALLOW,
+        ),
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ),
 );

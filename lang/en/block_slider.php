@@ -37,3 +37,7 @@ $string['auto_play_desc'] = 'Enables/disables auto playing of slides';
 $string['effect'] = 'Slide Effect';
 $string['int'] = 'Slide interval in ms';
 $string['noimages'] = 'Please enter block config and add some images';
+
+$string['configurlidex'] = 'URL {$a}';
+$string['config_url_section_heading'] = 'Set URLs';
+$string['config_url_section_description'] = 'Once you have uploaded your photos and saved the block, return to the configuration page to define URLs for each slide.';

@@ -21,6 +21,12 @@
  * @copyright 2015 Kamil Łuczak    www.limsko.pl     kamil@limsko.pl
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+
+define('BLOCK_SLIDER_MAX_SLIDES', 100);
+define('BLOCK_SLIDER_DEFAULT_SLIDECOUNT', 1);
+
+
 class block_slider extends block_base
 {
     public function init()
@@ -39,8 +45,8 @@ class block_slider extends block_base
 
         $this->content = new stdClass;
 
-        if (!empty($this->config->text)) {
-            $this->content->text = $this->config->text;
+        if (!empty($this->config->heading)) {
+            $this->content->text = $this->config->heading;
         } else {
             $this->content->text = '';
         }
@@ -51,12 +57,21 @@ class block_slider extends block_base
         $fs = get_file_storage();
         $files = $fs->get_area_files($this->context->id, 'block_slider', 'content');
         foreach ($files as $file) {
+            $id = $file->get_contenthash();
             $filename = $file->get_filename();
             if ($filename <> '.') {
-                $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), null, $file->get_filepath(), $filename);
-                $this->content->text .= '<img src="' . $url . '" alt="' . $filename . '" />';
+                $src = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid()     , $file->get_filepath(), $filename );
+                if(isset($this->config->url[$id])) {
+                    $url = $this->config->url[$id];
+                    $this->content->text .= '<a href="' . $url . '">';
+                }
+                $this->content->text .= '<img src="' . $src . '" alt="' . $filename . '" />';
+                if(!empty($url)) {
+                    $this->content->text .= '</a>';
+                }
             }
         }
+
         //Navigation Left/Right
         if (!empty($this->config->navigation)) {
             $this->content->text .= '<a href="#" class="slidesjs-previous slidesjs-navigation"><i class="icon fa fa-chevron-left icon-large" aria-hidden="true" aria-label="Prev"></i></a>';
@@ -106,10 +121,17 @@ class block_slider extends block_base
         $this->page->requires->js_call_amd('block_slider/slides', 'init', array($width, $height, $effect, $interval, $autoplay, $pag, $nav));
 
         if (count($files) < 1) {
-            $this->content->text = get_string('noimages', 'block_slider');
+            $this->content->heading = get_string('noimages', 'block_slider');
         }
 
         return $this->content;
+    }
+
+    function instance_delete() {
+        global $DB;
+        $fs = get_file_storage();
+        $fs->delete_area_files($this->context->id, 'block_slider');
+        return true;
     }
 
     function has_config()

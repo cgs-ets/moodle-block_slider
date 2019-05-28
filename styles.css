@@ -65,3 +65,7 @@
 .block_slider .navbar {
     overflow: hidden;
 }
+.block_slider .slidesjs-slide img {
+    display: block;
+    width: 100%;
+}
