@@ -54,7 +54,7 @@ class block_slider_edit_form extends block_edit_form
 
         //Upload many in one go
         $filemanoptions = array('subdirs' => 0, 'maxbytes' => 5000000, 'maxfiles' => BLOCK_SLIDER_MAX_SLIDES, 'accepted_types' => array('.png', '.jpg', '.gif', '.jpeg'));
-        $mform->addElement('filemanager', 'config_attachments', get_string('images', 'block_slider'), null, $filemanoptions);
+        $mform->addElement('filemanager', 'slideimages', get_string('images', 'block_slider'), null, $filemanoptions);
 
         $mform->addElement('static', 'description', get_string('config_url_section_heading', 'block_slider'), get_string('config_url_section_description', 'block_slider'));
 
@@ -81,20 +81,29 @@ class block_slider_edit_form extends block_edit_form
     }
 
 
-    function set_data($defaults)
-    {
-        if (empty($entry->id)) {
-            $entry = new stdClass;
-            $entry->id = null;
-        }
-        $draftitemid = file_get_submitted_draft_itemid('config_attachments');
-        file_prepare_draft_area($draftitemid, $this->block->context->id, 'block_slider', 'content', 0,
-            array('subdirs' => true));
-        $entry->attachments = $draftitemid;
+    function set_data($defaults) {
+
+        // Fetches the file manager draft area, called 'slideimages' 
+        $draftitemid = file_get_submitted_draft_itemid('slideimages');
+        
+        $itemid = 0; // This is used to distinguish between multiple file areas. In this case we use '0' as there is no relevant id to use.
+        
+        // Copy all the files from the 'real' area, into the draft area
+        file_prepare_draft_area($draftitemid, $this->block->context->id, 'block_slider', 'content', $itemid, array('subdirs'=>true));
+        
+        // Add draft area to default data
+        $defaults->slideimages = $draftitemid;
+
+        // Set form data
         parent::set_data($defaults);
+
+        // Save files from draft to 'real' area
         if ($data = parent::get_data()) {
-            file_save_draft_area_files($data->config_attachments, $this->block->context->id, 'block_slider', 'content', 0,
-                array('subdirs' => true));
+            file_save_draft_area_files($draftitemid, $this->block->context->id, 'block_slider', 'content', $itemid);
         }
+
     }
+
+
+
 }

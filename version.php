@@ -21,8 +21,8 @@
  * @copyright 2018 Kamil Łuczak    www.limsko.pl     kamil@limsko.pl
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$plugin->version = 2019052800;
+$plugin->version = 2019053000;
 $plugin->requires  = 2016052312;
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = "0.1.4";
+$plugin->release = "0.1.5";
 $plugin->component = 'block_slider';

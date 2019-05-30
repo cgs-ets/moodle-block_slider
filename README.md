@@ -31,3 +31,5 @@ I have tested plugin on clean install of Moodle 2.6, 2.7, 2.8, 2.9, 3.6
   - now using AMD format Javascript Modules
 - 0.1.4
   - added URL field for slides. If populated the slide will be wrapped in a link.
+- 0.1.5
+  - fix configuration for filemanager to populate images for other users.
