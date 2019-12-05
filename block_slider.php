@@ -45,6 +45,13 @@ class block_slider extends block_base
 
         $this->content = new stdClass;
 
+        // Check if the block is being shown on mobile and whether that is allowed.
+        $mobile = core_useragent::get_device_type() == core_useragent::DEVICETYPE_MOBILE;
+        $showonmobile = isset($this->config->mobile) && $this->config->mobile==1;
+        if ($mobile != $showonmobile) {
+            return $this->content;
+        }
+
         if (!empty($this->config->heading)) {
             $this->content->text = $this->config->heading;
         } else {

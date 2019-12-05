@@ -1,3 +1,20 @@
+/* Remove block border */
+.block_slider {
+    border: 0 none !important;
+}
+/* Hide block title to remove spacing */
+.block_slider .card-title {
+    display: none;
+}
+/* Show the title if in edit mode */
+.block_slider.block_with_controls .card-title {
+    display: block;
+}
+/* Remove padding so that contents fit to grid */
+.block_slider .card-body {
+    padding: 0 !important;
+}
+
 .block_slider .slider {
 	width: 100%;
 	background: transparent;

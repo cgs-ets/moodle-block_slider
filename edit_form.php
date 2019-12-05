@@ -28,6 +28,11 @@ class block_slider_edit_form extends block_edit_form
     {
         // Section header title according to language file.
         $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
+
+        // Check if the block should be shown on mobile.
+        $mform->addElement('advcheckbox', 'config_mobile', get_string('config_show', 'block_slider'), get_string('config_mobile', 'block_slider'));
+        $mform->setDefault('config_mobile', 0);
+
         // A sample string variable with a default value.
         $mform->addElement('text', 'config_heading', get_string('header', 'block_slider'));
         $mform->setDefault('config_heading', '');
@@ -83,14 +88,14 @@ class block_slider_edit_form extends block_edit_form
 
     function set_data($defaults) {
 
-        // Fetches the file manager draft area, called 'slideimages' 
+        // Fetches the file manager draft area, called 'slideimages'
         $draftitemid = file_get_submitted_draft_itemid('slideimages');
-        
+
         $itemid = 0; // This is used to distinguish between multiple file areas. In this case we use '0' as there is no relevant id to use.
-        
+
         // Copy all the files from the 'real' area, into the draft area
         file_prepare_draft_area($draftitemid, $this->block->context->id, 'block_slider', 'content', $itemid, array('subdirs'=>true));
-        
+
         // Add draft area to default data
         $defaults->slideimages = $draftitemid;
 
