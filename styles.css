@@ -1,6 +1,7 @@
 /* Remove block border */
 .block_slider {
-    border: 0 none !important;    
+    border: 0 none !important;
+    margin: 0 !important;
 }
 /* Hide block title to remove spacing */
 .block_slider .card-title {
@@ -22,6 +23,7 @@
 
 .block_slider #slides {
     display: none;
+    margin-bottom: 1rem !important;
 }
 
 .block_slider #slides .slidesjs-navigation {
