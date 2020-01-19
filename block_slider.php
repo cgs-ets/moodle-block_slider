@@ -77,6 +77,10 @@ class block_slider extends block_base
         $countskipped = 0;
         foreach ($files as $file) {
             $id = $file->get_contenthash();
+            
+            if (!isset($this->config->roles[$id]) || !isset($this->config->years[$id])) {
+                continue;
+            }
 
             if( !$this->checkallowed($this->config->roles[$id], $userroles) ||
                 !$this->checkyear($this->config->years[$id], $useryears)) {
@@ -97,6 +101,7 @@ class block_slider extends block_base
                 }
             }
         }
+        
         //Navigation Left/Right
         if (!empty($this->config->navigation)) {
             $this->content->text .= '<a href="#" class="slidesjs-previous slidesjs-navigation"><i class="icon fa fa-chevron-left icon-large" aria-hidden="true" aria-label="Prev"></i></a>';
