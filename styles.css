@@ -1,5 +1,5 @@
 /* Remove block border */
-.block_slider {
+.block_slider, .block_slider.mb-3 {
     border: 0 none !important;
     margin: 0 !important;
 }
