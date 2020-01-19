@@ -22,8 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function block_slider_pluginfile($course, $birecord_or_cm, $context, $filearea, $args, $forcedownload, array $options = array())
-{
+defined('MOODLE_INTERNAL') || die;
+
+function block_slider_pluginfile($course, $birecord_or_cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_BLOCK) {
@@ -64,12 +65,12 @@ function block_slider_pluginfile($course, $birecord_or_cm, $context, $filearea, 
 
     if ($parentcontext = context::instance_by_id($birecord_or_cm->parentcontextid, IGNORE_MISSING)) {
         if ($parentcontext->contextlevel == CONTEXT_USER) {
-            // force download on all personal pages including /my/
-            //because we do not have reliable way to find out from where this is used
+            // Force download on all personal pages including /my/
+            // because we do not have reliable way to find out from where this is used.
             $forcedownload = true;
         }
     } else {
-        // weird, there should be parent context, better force dowload then
+        // Weird, there should be parent context, better force dowload then.
         $forcedownload = true;
     }
 

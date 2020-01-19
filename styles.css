@@ -1,6 +1,6 @@
 /* Remove block border */
 .block_slider {
-    border: 0 none !important;
+    border: 0 none !important;    
 }
 /* Hide block title to remove spacing */
 .block_slider .card-title {
@@ -16,8 +16,8 @@
 }
 
 .block_slider .slider {
-	width: 100%;
-	background: transparent;
+    width: 100%;
+    background: transparent;
 }
 
 .block_slider #slides {
@@ -85,4 +85,21 @@
 .block_slider .slidesjs-slide img {
     display: block;
     width: 100%;
+}
+
+.block_slider .slider.show-on-desktop {
+    display: none;
+}
+
+.editing .block_slider .slider {
+    display: block;
+}
+
+@media screen and (min-width:1197px){
+    .block_slider .slider.show-on-desktop {
+        display: block;
+    }
+    .block_slider .slider.show-on-mobile {
+        display: none;
+    }
 }

@@ -25,19 +25,28 @@
 
 define('BLOCK_SLIDER_MAX_SLIDES', 100);
 define('BLOCK_SLIDER_DEFAULT_SLIDECOUNT', 1);
+defined('MOODLE_INTERNAL') || die();
 
 
 class block_slider extends block_base
 {
-    public function init()
-    {
+    public function init() {
         $this->title = get_string('pluginname', 'block_slider');
     }
 
-    public function get_content()
-    {
-        global $CFG;
+    public function get_content() {
+        global $USER, $CFG;
         require_once($CFG->libdir . '/filelib.php');
+
+        $userroles = array();
+        if (isset($USER->profile['CampusRoles'])) {
+            $userroles = explode(',', $USER->profile['CampusRoles']);
+        }
+
+        $useryears = array();
+        if(isset($USER->profile['Year'])) {
+            $useryears = explode(',', $USER->profile['Year']);
+        }
 
         if ($this->content !== null) {
             return $this->content;
@@ -46,10 +55,13 @@ class block_slider extends block_base
         $this->content = new stdClass;
 
         // Check if the block is being shown on mobile and whether that is allowed.
-        $mobile = core_useragent::get_device_type() == core_useragent::DEVICETYPE_MOBILE;
-        $showonmobile = isset($this->config->mobile) && $this->config->mobile==1;
-        if ($mobile != $showonmobile) {
-            return $this->content;
+
+        $showonmobile = '';
+        $showondesktop = '';
+        if (isset($this->config->mobile) && $this->config->mobile == 1) {
+            $showonmobile = 'show-on-mobile';
+        } else{
+            $showondesktop = 'show-on-desktop';
         }
 
         if (!empty($this->config->heading)) {
@@ -58,17 +70,24 @@ class block_slider extends block_base
             $this->content->text = '';
         }
 
-        $this->content->text .= '<div class="slider"><div id="slides">';
-
-        //get and display images
+        $this->content->text .= '<div class="slider ' . $showonmobile .' '.  $showondesktop .' "><div id="slides" class="slides">';
+        // Get and display images.
         $fs = get_file_storage();
         $files = $fs->get_area_files($this->context->id, 'block_slider', 'content');
+        $countskipped = 0;
         foreach ($files as $file) {
             $id = $file->get_contenthash();
+
+            if( !$this->checkallowed($this->config->roles[$id], $userroles) ||
+                !$this->checkyear($this->config->years[$id], $useryears)) {
+                 $countskipped = $countskipped + 1;
+                 continue;
+            }
+
             $filename = $file->get_filename();
             if ($filename <> '.') {
                 $src = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid()     , $file->get_filepath(), $filename );
-                if(isset($this->config->url[$id])) {
+                if( isset($this->config->url[$id])) {
                     $url = $this->config->url[$id];
                     $this->content->text .= '<a href="' . $url . '">';
                 }
@@ -78,7 +97,6 @@ class block_slider extends block_base
                 }
             }
         }
-
         //Navigation Left/Right
         if (!empty($this->config->navigation)) {
             $this->content->text .= '<a href="#" class="slidesjs-previous slidesjs-navigation"><i class="icon fa fa-chevron-left icon-large" aria-hidden="true" aria-label="Prev"></i></a>';
@@ -124,11 +142,17 @@ class block_slider extends block_base
         }
 
         $nav = false;
+        $instance = 'inst' . $this->instance->id;
+        $this->save_instance_width_height($instance, $width, $height);
 
-        $this->page->requires->js_call_amd('block_slider/slides', 'init', array($width, $height, $effect, $interval, $autoplay, $pag, $nav));
-
+        $this->page->requires->js_call_amd('block_slider/slides', 'init', array($width, $height, $effect, $interval, $autoplay, $pag, $nav, $instance));
         if (count($files) < 1) {
             $this->content->heading = get_string('noimages', 'block_slider');
+        }
+
+        // Case: All mandatory fields are invalid values.
+        if($countskipped == count($files) && !is_siteadmin()){
+            return $this->content->text ='';
         }
 
         return $this->content;
@@ -169,4 +193,53 @@ class block_slider extends block_base
             return true;
         }
     }
+    // Checks if the role of the user is allowed to see images.
+    public function checkallowed($imgroles, $userroles) {
+        $imgrolesarr = array_map('trim', explode(',', $imgroles));
+        $rolesallowed = array_intersect($userroles, $imgrolesarr);
+        $userrolesstr = implode(',', $userroles);
+
+        if ($imgroles == "*" || $rolesallowed || is_siteadmin()) {
+            return true;
+        }
+        // Do regex checks.
+        foreach ($imgrolesarr as $reg) {
+            $regex = "/${reg}/i";
+            if ($reg && (preg_match($regex, $userrolesstr) === 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+     public function checkyear($imgyears, $useryears) {
+        $imgyearsarr = array_map('trim', explode(',', $imgyears));
+        $yearssallowed = array_intersect($useryears, $imgyearsarr);
+        $useryearsstr = implode(',', $useryears);
+        if ($imgyears == "*" || $yearssallowed || is_siteadmin()) {
+            return true;
+        }
+
+        // Do regex checks.
+        foreach ($imgyearsarr as $reg) {
+            $regex = "/${reg}/i";
+            if ($reg && (preg_match($regex, $useryearsstr) === 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // Save the width and height of the instance as cookies.
+    // For some reason the JQuery does loses the reference too this values when there is more than one block  on the same page.
+    private function save_instance_width_height($instance,$width, $height) {
+
+        if (!isset($_COOKIE[$instance . 'w'])) {
+            setcookie($instance . 'w', $width, time()+ 30 * 24 * 60 * 60);
+        }
+
+        if (!isset($_COOKIE[$instance . 'h'])) {
+            setcookie($instance . 'h', $height, time() + 30 * 24 * 60 * 60);
+        }
+    }
+
 }
