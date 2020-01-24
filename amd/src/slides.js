@@ -260,8 +260,7 @@ define(['jquery'], function ($) {
                     if(this.isMobileOrSmallSize()){                       
                         this.options.height = this.getCookies(this.options.instance + 'wM');
                         this.options.width = this.getCookies(this.options.instance + 'hM');                        
-                    }else{   
-                        console.log("No es mobile. altura: " +this.getCookies(this.options.instance + 'hD'));
+                    }else{                          
                         this.options.height = this.getCookies(this.options.instance + 'hD');
                         this.options.width = this.getCookies(this.options.instance + 'wD');                       
                     }                    
