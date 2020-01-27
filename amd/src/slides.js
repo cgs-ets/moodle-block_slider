@@ -59,6 +59,7 @@ define(['jquery'], function ($) {
                     this._defaults = defaults;
                     this._name = pluginName;
                     this.init();
+                    this.update();
                 }
 
                 return Plugin;
@@ -228,7 +229,7 @@ define(['jquery'], function ($) {
                     isMobile = true;
                 }
                 browserResized = $(window).width() < 1197;               
-                return browserResized || isMobile;
+                return (browserResized || isMobile);
             };
             Plugin.prototype.update = function () {
                 var $element, height, width;
