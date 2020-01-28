@@ -58,12 +58,10 @@ class block_slider extends block_base
 
         $showonmobile = '';
         $showondesktop = '';
-        $device = 'D'; //By default, Desktop. 
         if (isset($this->config->mobile) && $this->config->mobile == 1) {
             $showonmobile = 'show-on-mobile';
-            $device = 'M';
         } else{
-            $showondesktop = 'show-on-desktop';            
+            $showondesktop = 'show-on-desktop';
         }
 
         if (!empty($this->config->heading)) {
@@ -150,9 +148,9 @@ class block_slider extends block_base
 
         $nav = false;
         $instance = 'inst' . $this->instance->id;
-        $this->save_instance_width_height($instance, $width, $height,$device);
+        $this->save_instance_width_height($instance, $width, $height);
 
-        $this->page->requires->js_call_amd('block_slider/slides', 'init', array($width, $height, $effect, $interval, $autoplay, $pag, $nav, $instance,$device));
+        $this->page->requires->js_call_amd('block_slider/slides', 'init', array($width, $height, $effect, $interval, $autoplay, $pag, $nav, $instance));
         if (count($files) < 1) {
             $this->content->heading = get_string('noimages', 'block_slider');
         }
@@ -237,16 +235,15 @@ class block_slider extends block_base
         return false;
     }
     // Save the width and height of the instance as cookies.
-    // Adding the deviceInitalLetter.  To fix issue when the page is view from a mobile phone.
     // For some reason the JQuery does loses the reference too this values when there is more than one block  on the same page.
-    private function save_instance_width_height($instance,$width, $height, $device) {
+    private function save_instance_width_height($instance,$width, $height) {
 
-        if (!isset($_COOKIE[$instance . 'w' . $device])) {
-            setcookie($instance . 'w' . $device, $width, time()+ 30 * 24 * 60 * 60);
+        if (!isset($_COOKIE[$instance . 'w'])) {
+            setcookie($instance . 'w', $width, time()+ 30 * 24 * 60 * 60);
         }
 
-        if (!isset($_COOKIE[$instance . 'h' . $device] )) {
-            setcookie($instance . 'h' . $device, $height, time() + 30 * 24 * 60 * 60);
+        if (!isset($_COOKIE[$instance . 'h'])) {
+            setcookie($instance . 'h', $height, time() + 30 * 24 * 60 * 60);
         }
     }
 

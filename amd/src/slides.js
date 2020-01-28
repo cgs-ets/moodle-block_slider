@@ -11,11 +11,10 @@ define(['jquery'], function ($) {
     (function () {
 
         (function ($, window, document) {
-            var Plugin, defaults, pluginName;
+            var Plugin, defaults, pluginName, Cookies;
             pluginName = "slidesjs";
             defaults = {
                 instance: "",
-                device: "",
                 width: 940,
                 height: 528,
                 start: 1,
@@ -219,18 +218,6 @@ define(['jquery'], function ($) {
                 var value = re.exec(document.cookie);
                 return (value !== null) ? unescape(value[1]) : null;
             };
-            Plugin.prototype.isMobileOrSmallSize = function () {
-                isMobile = false;
-                if (navigator.userAgent.match(/Android/i) 
-                        || navigator.userAgent.match(/BlackBerry/i)
-                        || navigator.userAgent.match(/iPhone|iPad|iPod/i) 
-                        || navigator.userAgent.match(/Opera Mini/i)
-                        || navigator.userAgent.match(/IEMobile/i)) {
-                    isMobile = true;
-                }
-                browserResized = $(window).width() < 1197;               
-                return (browserResized || isMobile);
-            };
             Plugin.prototype.update = function () {
                 var $element, height, width;
                 $element = $(this.element);
@@ -243,31 +230,19 @@ define(['jquery'], function ($) {
 
                 width = $element.width();
                 height = $element.height();
-               
+
                 // Part of Slides-responsive improvements.
                 if (width === 0 || height === 0) {
-                    if (this.options.device === 'M' || this.isMobileOrSmallSize()) {
-                        width = this.getCookies(this.options.instance + 'wM');
-                        height = this.getCookies(this.options.instance + 'hM');
-                    } else {
-                        width = this.getCookies(this.options.instance + 'wD');
-                        height = this.getCookies(this.options.instance + 'hD');
-                    }
+                    width = this.getCookies(this.options.instance + 'w');
+                    height = this.getCookies(this.options.instance + 'h');
                 }
 
                 if (isNaN(this.options.height) || this.options.width === 0 ||
-                        this.options.height === 0 ) {
-                   
-                    if(this.isMobileOrSmallSize()){                       
-                        this.options.height = this.getCookies(this.options.instance + 'wM');
-                        this.options.width = this.getCookies(this.options.instance + 'hM');                        
-                    }else{                          
-                        this.options.height = this.getCookies(this.options.instance + 'hD');
-                        this.options.width = this.getCookies(this.options.instance + 'wD');                       
-                    }                    
+                        this.options.height === 0) {
+                    this.options.height = this.getCookies(this.options.instance + 'w');
+                    this.options.width = this.getCookies(this.options.instance + 'h');
                 }
-                
-              
+
                 height = (this.options.height / this.options.width) * width;
                 this.options.width = width;
                 this.options.height = height;
@@ -654,12 +629,11 @@ define(['jquery'], function ($) {
     }).call(this);
 
     return {
-        init: function (width, height, effect, interval, autoplay, pag, nav, instance,device) {
+        init: function (width, height, effect, interval, autoplay, pag, nav, instance) {
 
             $(function () {
                 $("#" + instance + " .slides").slidesjs({
                     instance: instance,
-                    device: device,
                     width: width,
                     height: height,
                     navigation: {
@@ -697,4 +671,3 @@ define(['jquery'], function ($) {
         }
     };
 });
-
