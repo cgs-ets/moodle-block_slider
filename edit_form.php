@@ -119,7 +119,13 @@ class block_slider_edit_form extends block_edit_form {
 
         // Save files from draft to 'real' area.
         if ($data = parent::get_data()) {
-            file_save_draft_area_files($draftitemid, $this->block->context->id, 'block_slider', 'content', $itemid);
+            file_save_draft_area_files(
+                $data->slideimages, 
+                $this->block->context->id, 
+                'block_slider', 
+                'content', 
+                $itemid
+            );
         }
 
     }

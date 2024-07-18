@@ -209,7 +209,7 @@ class block_slider extends block_base
         }
         // Do regex checks.
         foreach ($imgrolesarr as $reg) {
-            $regex = "/${reg}/i";
+            $regex = "/{$reg}/i";
             if ($reg && (preg_match($regex, $userrolesstr) === 1)) {
                 return true;
             }
@@ -227,7 +227,7 @@ class block_slider extends block_base
 
         // Do regex checks.
         foreach ($imgyearsarr as $reg) {
-            $regex = "/${reg}/i";
+            $regex = "/{$reg}/i";
             if ($reg && (preg_match($regex, $useryearsstr) === 1)) {
                 return true;
             }
