@@ -198,13 +198,41 @@ class block_slider extends block_base
             return true;
         }
     }
+
+    // Check if the user is enrolled as a teacher in the site home course.
+    public function is_site_editor($userid) {
+        $siteeditor = false;
+        $sitehomecourse = get_site()->id;
+        $context = context_course::instance($sitehomecourse);
+        
+        // Check if user is enrolled
+        if (is_enrolled($context, $userid, '', true)) {
+            // Get the user's roles in this context
+            $roles = get_user_roles($context, $userid, false);
+            
+            // Define which role(s) you want to check for
+            $required_roles = array('editingteacher', 'teacher', 'manager'); // Adjust as needed
+            
+            foreach ($roles as $role) {
+                if (in_array($role->shortname, $required_roles)) {
+                    $siteeditor = true;
+                    break; // No need to check further if we found a match
+                }
+            }
+        }
+        return $siteeditor;
+    }
+
     // Checks if the role of the user is allowed to see images.
     public function checkallowed($imgroles, $userroles) {
+        global $USER;
+        $siteeditor = $this->is_site_editor($USER->id);
+        
         $imgrolesarr = array_map('trim', explode(',', $imgroles));
         $rolesallowed = array_intersect($userroles, $imgrolesarr);
         $userrolesstr = implode(',', $userroles);
 
-        if ($imgroles == "*" || $rolesallowed || is_siteadmin()) {
+        if ($imgroles == "*" || $rolesallowed || is_siteadmin() || $siteeditor) {
             return true;
         }
         // Do regex checks.
@@ -218,10 +246,13 @@ class block_slider extends block_base
     }
 
      public function checkyear($imgyears, $useryears) {
+        global $USER;
+        $siteeditor = $this->is_site_editor($USER->id);
+
         $imgyearsarr = array_map('trim', explode(',', $imgyears));
         $yearssallowed = array_intersect($useryears, $imgyearsarr);
         $useryearsstr = implode(',', $useryears);
-        if ($imgyears == "*" || $yearssallowed || is_siteadmin()) {
+        if ($imgyears == "*" || $yearssallowed || is_siteadmin() || $siteeditor) {
             return true;
         }
 
